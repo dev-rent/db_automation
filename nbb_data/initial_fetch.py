@@ -15,21 +15,20 @@ import json
 import uuid
 import requests
 from datetime import datetime
-# from sqlalchemy import URL, create_engine
 
 from log_config import ScriptLogger
 from nbb_data.classes import URLgen_nbb
 
 
-ref_logger = ScriptLogger('ref_url.log', level=20)
-data_logger = ScriptLogger('data_url.log', level=20)
+ref_logger = ScriptLogger("ref_url.log", level=20)
+data_logger = ScriptLogger("data_url.log", level=20)
 
 success = 0
 fail = 0
 failed_ent_list = []
 
 # Step 1
-with open('server1.csv', newline="") as csvfile:
+with open("server4.csv", newline="") as csvfile:
     read = csv.reader(csvfile)
     enterprise_lst = [x[0] for x in read]
 
@@ -39,17 +38,17 @@ length = len(enterprise_lst)
 api_authentic = os.getenv("API_KEY_AUTHENTIC")
 
 hdr_ref = {
-    'X-Request-Id': str(uuid.uuid4()),
-    'NBB-CBSO-Subscription-Key': api_authentic,
-    'Accept': "application/json",
-    'User-Agent': 'PostmanRuntime/7.37.3'
+    "X-Request-Id": str(uuid.uuid4()),
+    "NBB-CBSO-Subscription-Key": api_authentic,
+    "Accept": "application/json",
+    "User-Agent": "PostmanRuntime/7.37.3"
 }
 
 hdr_accData = {
-    'X-Request-Id': str(uuid.uuid4()),
-    'NBB-CBSO-Subscription-Key': api_authentic,
-    'Accept': "application/x.jsonxbrl",
-    'User-Agent': 'PostmanRuntime/7.37.3'
+    "X-Request-Id": str(uuid.uuid4()),
+    "NBB-CBSO-Subscription-Key": api_authentic,
+    "Accept": "application/x.jsonxbrl",
+    "User-Agent": "PostmanRuntime/7.37.3"
 }
 
 for ent in enterprise_lst[:2]:
@@ -81,11 +80,11 @@ for ent in enterprise_lst[:2]:
             (
                 x for x in json_data
                 if datetime.strptime(
-                    x['ExerciseDates']['endDate'],
+                    x["ExerciseDates"]["endDate"],
                     "%Y-%m-%d"
                     ).year >= 2021
             ),
-            key=lambda x: x['ExerciseDates']['endDate']
+            key=lambda x: x["ExerciseDates"]["endDate"]
             )
     except Exception as e:
         ref_logger.log.error(f"No exercise dates found in {ent}: {e}")
@@ -96,13 +95,19 @@ for ent in enterprise_lst[:2]:
     acc_ref_list: list[tuple] = []
     for dct in list_of_ref:
         acc_ref_list.append(
-            (dct.get('AccountingDataURL', ''), dct.get('ReferenceNumber'))
+            (dct.get("AccountingDataURL", ""), dct.get("ReferenceNumber"))
             )
 
     # Step 4
     target = "temp_references/{}.json"
-    with open(target.format(ent), 'w') as file:
-        json.dump(list_of_ref, file, indent=4)
+    try:
+        with open(target.format(ent), "w") as file:
+            json.dump(list_of_ref, file, indent=4)
+    except Exception as e:
+        ref_logger.log.error(f"While writing references file. {ent} - {e}")
+        fail += 1
+        failed_ent_list.append(ent)
+        continue
 
     # Step 5: Fetch companies filings
     data_list = []
@@ -120,8 +125,13 @@ for ent in enterprise_lst[:2]:
             continue
 
         data_list.append(ref[1])
-        with open(target.format(ref[1]), 'wb') as data:
-            data.write(resp.content)
+        try:
+            with open(target.format(ref[1]), "wb") as data:
+                data.write(resp.content)
+        except Exception as e:
+            data_logger.log.error(
+                f"Likely failed because no JSONXBRL. {ent} - {e}")
+            continue
 
     success += 1
 
