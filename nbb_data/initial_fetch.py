@@ -20,8 +20,8 @@ from log_config import ScriptLogger
 from nbb_data.classes import URLgen_nbb
 
 
-ref_logger = ScriptLogger("ref_url.log", level=20)
-data_logger = ScriptLogger("data_url.log", level=20)
+ref_logger = ScriptLogger("logs/ref_url.log", level=20)
+data_logger = ScriptLogger("logs/data_url.log", level=20)
 
 success = 0
 fail = 0
