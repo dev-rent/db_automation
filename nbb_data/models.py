@@ -29,7 +29,7 @@ table_country_codes = Table(
 table_entities = Table(
     "entities", metadata,
     Column("identifier", Uuid),
-    Column("enterprise_id", String),
+    Column("entity_id", String),
     Column("country_code", String),
     Column("denomination", String),
     Column("street", String),
@@ -79,6 +79,7 @@ table_shareholders = Table(
     Column("enterprise_id", String),
     Column("entity_id", Uuid),
     Column("person_id", Uuid),
+    Column("account_year", Integer),
     Column("denomination", String),
     Column("nature_rights", String),
     Column("line_rights", String),
