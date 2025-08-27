@@ -200,7 +200,9 @@ class Entity:
                 else country_dict.get(entity["Address"].get("OtherCountry"))
                 or "XX",
             "denomination": entity.get("Name"),
-            "street": entity["Address"].get("Street"),
+            "street":
+                entity["Address"]["Street"].lower()
+                if entity["Address"].get("Street") else None,
             "street_number": entity["Address"].get("Number"),
             "zipcode":
                 entity["Address"].get("City").replace("pcd:m", "")
