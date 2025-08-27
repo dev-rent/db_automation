@@ -5,13 +5,34 @@ metadata = MetaData()
 
 table_accounting_codes = Table(
     "accounting_codes", metadata,
-    Column("accountcode_id", String),
+    Column("accountcode_id", String, primary_key=True),
     Column("denomination", String)
+    )
+
+table_administrators_natural = Table(
+    "administrators_natural", metadata,
+    Column("enterprise_id", String),
+    Column("person_id", String),
+    Column("function_code", String),
+    Column("start_date", Date),
+    Column("end_date", Date),
+    Column("year", Integer)
+    )
+
+table_administrators_legal = Table(
+    "administrators_legal", metadata,
+    Column("enterprise_id", String),
+    Column("entity_id", Uuid),
+    Column("person_id", Uuid),
+    Column("function_code", String),
+    Column("start_date", Date),
+    Column("end_date", Date),
+    Column("year", Integer)
     )
 
 table_company_info = Table(
     "company_info", metadata,
-    Column("enterprise_id", String),
+    Column("enterprise_id", String, primary_key=True),
     Column("denomination", String),
     Column("legal_situation", String)
     )
@@ -28,7 +49,7 @@ table_country_codes = Table(
 
 table_entities = Table(
     "entities", metadata,
-    Column("identifier", Uuid),
+    Column("identifier", Uuid, primary_key=True),
     Column("entity_id", String),
     Column("country_code", String),
     Column("denomination", String),
@@ -37,15 +58,6 @@ table_entities = Table(
     Column("zipcode", String),
     )
 
-table_legal_persons = Table(
-    "legal_persons", metadata,
-    Column("enterprise_id", String),
-    Column("entity_id", Uuid),
-    Column("natural_person", Uuid),
-    Column("function_code", String),
-    Column("start_date", Date),
-    Column("end_date", Date)
-    )
 
 table_natural_persons = Table(
     "natural_persons", metadata,
