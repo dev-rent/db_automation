@@ -6,6 +6,8 @@ from datetime import datetime, timedelta
 from sqlalchemy import URL, create_engine
 from dotenv import load_dotenv
 
+from .functions import normalise_string
+
 
 load_dotenv()
 
@@ -85,7 +87,7 @@ class References:
         - correction_list (all CORRECTION references) (list[dict])
     """
     def __init__(self, data: list):
-        self.enterprise_id = re.sub(r"\D", "", data[-1]["EnterpriseNumber"])
+        self.enterprise_id = re.sub(r"[^\d]", "", data[-1]["EnterpriseNumber"])
         self.enterprise_name = data[-1].get("EnterpriseName")
         self.legal_situation = data[-1].get("LegalSituation")
         self.references = [{
@@ -101,7 +103,7 @@ class References:
             "legal_form": d["LegalForm"],
             "activity_code": d.get("ActivityCode"),
             "model_type": d["ModelType"],
-            "last_update": datetime.today()
+            "last_update": datetime.now()
             }
             for d in data
             ]
@@ -113,6 +115,8 @@ class References:
                 self.initial_list.append(ref_dict)
             elif ref_dict["deposit_type"] == "Correction":
                 self.correction_list.append(ref_dict)
+            else:
+                continue
 
 
 class Filing:
@@ -178,6 +182,11 @@ class Person:
                 else country_dict.get(person["Address"].get("OtherCountry"))
                 or "XX",
         }
+        self.key = tuple(
+            normalise_string(v.lower())
+            for k, v in self.description.items()
+            if k in {"first_name", "last_name", "street", "street_number"}
+            )
 
 
 class Entity:
@@ -193,7 +202,7 @@ class Entity:
         self.id = uuid.uuid4()
         self.description = {
             "identifier": self.id,
-            "entity_id": re.sub(r"\D", "", entity.get("Identifier")),
+            "entity_id": re.sub(r"[^\d]", "", entity.get("Identifier")),
             "country_code":
                 entity["Address"].get("Country").replace("cty:m", "")
                 if entity["Address"].get("Country")
@@ -209,3 +218,18 @@ class Entity:
                 if entity["Address"].get("City")
                 else entity["Address"].get("OtherPostalCode") or "0000"
         }
+        self.key = self.description.get("entity_id")
+
+
+class CleanedData:
+    def __init__(self) -> None:
+        self.company_info: dict[str, str] = {}
+        self.persons_dict: dict = {}
+        self.entities_dict: dict = {}
+        self.admin_legal_list: list[dict] = []
+        self.admin_nat_list: list[dict] = []
+        self.part_interest_list: list[dict] = []
+        self.shareholders_list: list = []
+        self.accounting_codes: list = []
+        self.statements_list: list = []
+        self.facts_list: list = []
