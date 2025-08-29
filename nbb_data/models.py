@@ -16,7 +16,7 @@ table_administrators_natural = Table(
     Column("function_code", String),
     Column("start_date", Date),
     Column("end_date", Date),
-    Column("year", Integer)
+    Column("account_year", Integer)
     )
 
 table_administrators_legal = Table(
@@ -27,7 +27,7 @@ table_administrators_legal = Table(
     Column("function_code", String),
     Column("start_date", Date),
     Column("end_date", Date),
-    Column("year", Integer)
+    Column("account_year", Integer)
     )
 
 table_company_info = Table(
@@ -73,7 +73,7 @@ table_natural_persons = Table(
 table_part_int = Table(
     "participating_interests", metadata,
     Column("enterprise_id", String),
-    Column("entity_id", String),
+    Column("entity_identifier", String),
     Column("account_year", Integer),
     Column("account_date", Date),
     Column("currency", String),
