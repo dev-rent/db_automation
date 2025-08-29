@@ -12,7 +12,7 @@ table_accounting_codes = Table(
 table_administrators_natural = Table(
     "administrators_natural", metadata,
     Column("enterprise_id", String),
-    Column("person_id", String),
+    Column("person_uuid", String),
     Column("function_code", String),
     Column("start_date", Date),
     Column("end_date", Date),
@@ -22,8 +22,8 @@ table_administrators_natural = Table(
 table_administrators_legal = Table(
     "administrators_legal", metadata,
     Column("enterprise_id", String),
-    Column("entity_id", Uuid),
-    Column("person_id", Uuid),
+    Column("entity_uuid", Uuid),
+    Column("person_uuid", Uuid),
     Column("function_code", String),
     Column("start_date", Date),
     Column("end_date", Date),
@@ -49,7 +49,7 @@ table_country_codes = Table(
 
 table_entities = Table(
     "entities", metadata,
-    Column("identifier", Uuid, primary_key=True),
+    Column("entity_uuid", Uuid, primary_key=True),
     Column("entity_id", String),
     Column("country_code", String),
     Column("denomination", String),
@@ -61,7 +61,7 @@ table_entities = Table(
 
 table_natural_persons = Table(
     "natural_persons", metadata,
-    Column("person_id", Uuid),
+    Column("person_uuid", Uuid),
     Column("first_name", String),
     Column("last_name", String),
     Column("street", String),
@@ -73,7 +73,7 @@ table_natural_persons = Table(
 table_part_int = Table(
     "participating_interests", metadata,
     Column("enterprise_id", String),
-    Column("entity_identifier", String),
+    Column("entity_uuid", Uuid),
     Column("account_year", Integer),
     Column("account_date", Date),
     Column("currency", String),
@@ -89,8 +89,8 @@ table_part_int = Table(
 table_shareholders = Table(
     "shareholders", metadata,
     Column("enterprise_id", String),
-    Column("entity_id", Uuid),
-    Column("person_id", Uuid),
+    Column("entity_uuid", Uuid),
+    Column("person_uuid", Uuid),
     Column("account_year", Integer),
     Column("denomination", String),
     Column("nature_rights", String),
