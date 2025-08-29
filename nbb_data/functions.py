@@ -1,5 +1,6 @@
 import re
 import unicodedata
+from typing import Iterable
 
 from rapidfuzz import fuzz
 
@@ -24,3 +25,19 @@ def normalise_string(string: str, *, digits=False) -> str:
 def fuzzy_equal(a: str, b: str, threshold: int = 90) -> bool:
     score = fuzz.ratio(a, b)
     return score >= threshold
+
+
+def fuzzy_keys(key: tuple, keys: Iterable) -> tuple:
+    """
+    Fuzzy match a key with existings keys and return matching key if exists.
+    """
+    length = len(key)
+
+    for k in keys:
+        for i in range(length):
+            threshold = 90 if len(key[i]) > 4 else 80
+            if not fuzzy_equal(key[i], k[i], threshold):
+                break
+        else:
+            return True, k
+    return False, None
