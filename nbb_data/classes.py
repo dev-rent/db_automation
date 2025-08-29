@@ -98,7 +98,7 @@ class References:
                 d["ExerciseDates"]["endDate"], "%Y-%m-%d"),
             "filing_id": d["ReferenceNumber"],
             "account_year": int(d["ExerciseDates"]["endDate"][:4]) + 1,
-            "deposit_date": d["DepositDate"],
+            "deposit_date": datetime.strptime(d["DepositDate"], "%Y-%m-%d"),
             "deposit_type": d["DepositType"],
             "legal_form": d["LegalForm"],
             "activity_code": d.get("ActivityCode"),
@@ -107,6 +107,25 @@ class References:
             }
             for d in data
             ]
+
+        self.cleaned_ref_dict = {}
+        for ref_dict in self.references:
+            key = (ref_dict['start_date'], ref_dict['end_date'])
+            if key in self.cleaned_ref_dict.keys():
+                modelType = self.cleaned_ref_dict[key]["model_type"]
+
+                if (
+                    ref_dict['deposit_date']
+                    > self.cleaned_ref_dict[key]['deposit_date']
+                    and modelType == ref_dict["model_type"]
+                    ):
+                    self.cleaned_ref_dict[key] = ref_dict
+                else:
+                    pass
+            else:
+                self.cleaned_ref_dict[key] = ref_dict
+
+        self.filings_list = [v for v in self.cleaned_ref_dict.values()]
 
         self.initial_list = []
         self.correction_list = []
@@ -161,7 +180,7 @@ class Person:
     def __init__(self, person: dict, country_dict: dict):
         self.id = uuid.uuid4()
         self.description = {
-            "person_id": self.id,
+            "person_uuid": self.id,
             "first_name":
                 person["FirstName"].lower()
                 if person.get("FirstName") else None,
@@ -201,7 +220,7 @@ class Entity:
     def __init__(self, entity, country_dict):
         self.id = uuid.uuid4()
         self.description = {
-            "identifier": self.id,
+            "entity_uuid": self.id,
             "entity_id": re.sub(r"[^\d]", "", entity.get("Identifier")),
             "country_code":
                 entity["Address"].get("Country").replace("cty:m", "")
