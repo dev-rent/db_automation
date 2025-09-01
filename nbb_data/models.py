@@ -13,9 +13,6 @@ table_administrators_natural = Table(
     "administrators_natural", metadata,
     Column("enterprise_id", String),
     Column("person_uuid", String),
-    Column("function_code", String),
-    Column("start_date", Date),
-    Column("end_date", Date),
     Column("account_year", Integer)
     )
 
@@ -24,9 +21,6 @@ table_administrators_legal = Table(
     Column("enterprise_id", String),
     Column("entity_uuid", Uuid),
     Column("person_uuid", Uuid),
-    Column("function_code", String),
-    Column("start_date", Date),
-    Column("end_date", Date),
     Column("account_year", Integer)
     )
 
@@ -55,9 +49,18 @@ table_entities = Table(
     Column("denomination", String),
     Column("street", String),
     Column("street_number", String),
-    Column("zipcode", String),
+    Column("zipcode", String)
     )
 
+table_mandates = Table(
+    "mandates", metadata,
+    Column("person_uuid", Uuid),
+    Column("enterprise_id", String),
+    Column("function_code", String),
+    Column("start_date", Date),
+    Column("end_date", Date),
+    Column("account_year", Integer)
+)
 
 table_natural_persons = Table(
     "natural_persons", metadata,
