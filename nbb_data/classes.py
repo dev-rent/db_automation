@@ -252,3 +252,4 @@ class CleanedData:
         self.accounting_codes: list = []
         self.statements_list: list = []
         self.facts_list: list = []
+        self.mandates_list: list = []
